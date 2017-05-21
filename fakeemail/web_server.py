@@ -27,7 +27,7 @@ class WebMessageDisplay(Resource):
         if email_list:
             for msg, attachments in email_list:
                 parts = {}
-                parts['headers'] = msg.items()
+                parts['headers'] = list(msg.items())
                 parts['content_type'] = msg.get_content_type()
                 for part in msg.walk():
                     # multipart/* are just containers, and things that
@@ -42,10 +42,10 @@ class WebMessageDisplay(Resource):
                     # Assume that any non-text types are just attachments
                     if content_type.startswith('text/'):
                         payload = part.get_payload(decode=True)
-                        if isinstance(payload, unicode):
+                        if isinstance(payload, str):
                             output = payload
                         else:
-                            output = unicode(payload, 'utf-8')
+                            output = str(payload, 'utf-8')
 
                     parts[part.get_content_subtype()] = output
                     available_content_types.add(part.get_content_subtype())

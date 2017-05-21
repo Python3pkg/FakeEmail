@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import email
 import os
 import tempfile
@@ -7,8 +7,8 @@ from twisted.application import service
 from twisted.python import usage
 from zope.interface import implements
 
-from smtp_server import WebMessageESMTPFactory, makeSMTPService
-from web_server import WebMessageRouter, Site, makeWebService
+from .smtp_server import WebMessageESMTPFactory, makeSMTPService
+from .web_server import WebMessageRouter, Site, makeWebService
 
 
 _TEMPDIR = None
@@ -24,12 +24,12 @@ class WebMessageStorage(object):
     messages = {}
 
     def addMessage(self, to, message):
-        if unicode(to.dest) in self.messages:
-            self.messages[unicode(to.dest)].append(self.process_message(message))
+        if str(to.dest) in self.messages:
+            self.messages[str(to.dest)].append(self.process_message(message))
         else:
-            self.messages[unicode(to.dest)] = [self.process_message(message)]
+            self.messages[str(to.dest)] = [self.process_message(message)]
 
-        print("Message stored for: " + unicode(to.dest))
+        print("Message stored for: " + str(to.dest))
 
     def process_message(self, message):
         # Unpack each message and store the attachments to a temporary
@@ -54,7 +54,7 @@ class WebMessageStorage(object):
         return None
 
     def get_all_names(self):
-        return self.messages.keys()
+        return list(self.messages.keys())
 
     def get_count(self, name):
         return len(self.messages[name])
